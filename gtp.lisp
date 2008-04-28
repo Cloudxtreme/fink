@@ -9,5 +9,5 @@
   (let* ((commands (split-string (string-downcase command-string) " "))
 	 (command (intern (first commands))))
     (case (command)
-      (
+      (thing
   
