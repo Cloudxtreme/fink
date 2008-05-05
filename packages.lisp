@@ -4,7 +4,10 @@
 
 (defpackage gtp-handler
   (:use :common-lisp)
-  (:export gtp-client))
+  (:export :gtp-client))
 
 (defpackage go-bot
-  (:use :common-lisp))
+  (:use :common-lisp)
+  (:export :*name*
+	    :*version*
+	    :*author*))

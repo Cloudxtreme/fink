@@ -1,8 +1,11 @@
 (in-package :gtp-handler)
 
+(defparameter *quit?* nil)
+
 (defun gtp-client ()
-  (do ((quit? nil))
-      ((eql quit? t))
+  (setf *quit?* nil)
+   (do ()
+      ((eql *quit?* t))
     (format t "= ~a~%~%" (dispatch-gtp-command (read-line t)))))
 
 (defun split-string (string pivot-str)
@@ -17,11 +20,21 @@
 
 
 (defun dispatch-gtp-command (command-string)
-  (let* ((commands (split-string (string-downcase command-string) " "))
+  (let* ((commands (cl-ppcre:split "\\s+" (string-upcase command-string)))
 	 (command (intern (first commands))))
     (progn (format t "'~a'~%" command)
     (case command
-      (name "GoBot")
-      (version "0.1")
+      (name go-bot:*name*)
+      (version go-bot:*version*)
+      ;(boardsize (progn 
+		  ; (go-bot:set-boardsize (parse-integer (second commands)))
+		  ; (go-bot:init-board)))
+      ;(komi (go-bot:set-komi (parse-integer (second commands))))
+      ;(clearboard (go-bot:init)
+      ;(play (go-bot:play (second commands) (third commands)))
+      ;(genmove (go-bot:genmove (char (second commands) 0)))
+      ;(known_command)
+      ;(list_commands
+      (quit (progn (setf *quit?* t)) "")
       (otherwise (concatenate 'string "Unkown command '" (first commands) "'"))))))
   
