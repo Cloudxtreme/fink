@@ -10,4 +10,9 @@
   (:use :common-lisp)
   (:export :*name*
 	    :*version*
-	    :*author*))
+	    :*author*
+	    :set-komi
+	    :set-boardsize
+	    :init-board
+	    :init
+	    ))

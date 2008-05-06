@@ -22,19 +22,20 @@
 (defun dispatch-gtp-command (command-string)
   (let* ((commands (cl-ppcre:split "\\s+" (string-upcase command-string)))
 	 (command (intern (first commands))))
-    (progn (format t "'~a'~%" command)
     (case command
       (name go-bot:*name*)
       (version go-bot:*version*)
-      ;(boardsize (progn 
-		  ; (go-bot:set-boardsize (parse-integer (second commands)))
-		  ; (go-bot:init-board)))
-      ;(komi (go-bot:set-komi (parse-integer (second commands))))
-      ;(clearboard (go-bot:init)
-      ;(play (go-bot:play (second commands) (third commands)))
+      (boardsize (go-bot:set-boardsize (parse-integer (second commands)))
+		 (go-bot:init-board)
+		 "")
+      ; warning: read-from-string pulls full reader. not safe
+      (komi (go-bot:set-komi (read-from-string (second commands))) 
+	    "")
+      (clearboard (go-bot:init) "")
+      (play (go-bot:play (char (second commands) 0) (third commands)))
       ;(genmove (go-bot:genmove (char (second commands) 0)))
       ;(known_command)
       ;(list_commands
-      (quit (progn (setf *quit?* t)) "")
-      (otherwise (concatenate 'string "Unkown command '" (first commands) "'"))))))
+      (quit (setf *quit?* t) "")
+      (otherwise (concatenate 'string "Unkown command '" (first commands) "'")))))
   
