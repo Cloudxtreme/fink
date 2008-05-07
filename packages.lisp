@@ -1,9 +1,11 @@
-(in-package :cl-user)
+(in-package :common-lisp)
 
-(clc:clc-require :cl-ppcre)
+;(clc:clc-require :cl-ppcre)
+(asdf:oos 'asdf:load-op :cl-ppcre)
+(require :sb-bsd-sockets)
 
 (defpackage gtp-handler
-  (:use :common-lisp)
+  (:use :common-lisp :sb-bsd-sockets)
   (:export :gtp-client))
 
 (defpackage go-bot
@@ -15,4 +17,6 @@
 	    :set-boardsize
 	    :init-board
 	    :init
+	    :play
+	    :genmove
 	    ))
