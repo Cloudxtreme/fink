@@ -1,6 +1,6 @@
 (in-package :gtp-handler)
 
-(require :sb-bsd-sockets)
+;(require :sb-bsd-sockets)
 
 (defparameter *quit?* nil)
 
@@ -10,26 +10,30 @@
    four element array, suitable for socket-connect.  If HOSTNAME is
    not found, a host-not-found-error condition is thrown."
    (if hostname
-       (host-ent-address (get-host-by-name hostname))
+       (sb-bsd-sockets:host-ent-address (sb-bsd-sockets:get-host-by-name hostname))
        nil)) 
 
 (defun tcp-connect (server port &optional (timeout 10))
-  (let ((socket (make-instance 'sb-bsd-sockets:inet-socket :type  
-:stream :protocol :tcp))) 
-    (sb-bsd-sockets:socket-connect socket  (nslookup server) port) 
-    socket))
+  (handler-case
+      (let ((socket (make-instance 'sb-bsd-sockets:inet-socket :type :stream :protocol :tcp))) 
+	(sb-bsd-sockets:socket-connect socket  (nslookup server) port) 
+	socket)
+    (sb-bsd-sockets:CONNECTION-REFUSED-ERROR () 
+      (progn 
+	(format t "Error: Connection refused~%") 
+	nil))))
 		
 
 (defun tcp-print-raw (socket line)
   (when (and socket line)
-    (socket-send socket line nil)))
+    (sb-bsd-sockets:socket-send socket line nil)))
 
 (defun tcp-print (socket line)
   (tcp-print-raw socket (concatenate 'string (format nil "~04d" (length line)) line)))
 
 (defun tcp-read-raw (socket &key (maxsize 65536) (timeout 10))
    (when socket
-     (values (socket-receive socket nil maxsize))))
+     (values (sb-bsd-sockets:socket-receive socket nil maxsize))))
 
 ;(if-timeout (timeout (format t "socket-receive timed out after ~A seconds.~%" timeout) (force-output) nil)
 
@@ -43,20 +47,20 @@
 
 (defun gtp-net-client (server port)
   (go-bot:init)
-  ;(print "bot inited")
   (setf *quit?* nil)
-  ;(print "get connection")
   (let ((socket (tcp-connect server port)))
-    ;(print "got socket")
-    (do ()
-	((eql *quit?* t))
-      (let ((cmd (tcp-read socket)))
-;	(print cmd)
-	(let ((resp (dispatch-gtp-command cmd)))
-	;  (print resp)
-	  (tcp-print socket (concatenate 'string "= " resp (string #\newline) (string #\newline))))))))
+    (if (eql socket nil)
+	()
+	(progn
+	  (format t "Connection establish, playing...~%")
+	  (do ()
+	      ((or (eql socket nil) (eql *quit?* t)))
+	    (let ((cmd (tcp-read socket)))
+	      ;	(print cmd)
+	      (let ((resp (dispatch-gtp-command cmd)))
+	       ;(print resp)
+		(tcp-print socket (concatenate 'string "= " resp (string #\newline) (string #\newline))))))))))
 
-;      (tcp-print socket (concatenate 'string "= " (dispatch-gtp-command (tcp-read socket)) "\n\n")))))
 
 (defun gtp-client ()
   (go-bot:init)
