@@ -2,7 +2,9 @@
 
 ;(require :sb-bsd-sockets)
 
+
 (defparameter *quit?* nil)
+;(defparameter *cputime*)
 
 
 (defun nslookup (hostname)
@@ -52,11 +54,11 @@
     (if (eql socket nil)
 	()
 	(progn
-	  (format t "Connection establish, playing...~%")
+;	  (format t "Connection establish, playing...~%")
 	  (do ()
 	      ((or (eql socket nil) (eql *quit?* t)))
 	    (let ((cmd (tcp-read socket)))
-	      ;	(print cmd)
+	      	;(format t "cmd: '~a'~%'" cmd)
 	      (let ((resp (dispatch-gtp-command cmd)))
 	       ;(print resp)
 		(tcp-print socket (concatenate 'string "= " resp (string #\newline) (string #\newline))))))))))
@@ -84,6 +86,7 @@
   (let* ((commands (split-string (string-upcase command-string) " "))
 					;(cl-ppcre:split "\\s+" (string-upcase command-string)))
 	 (command (intern (first commands) :gtp-handler)))
+    ;(print command)
     (case command
       (name go-bot:*name*)
       (version go-bot:*version*)
