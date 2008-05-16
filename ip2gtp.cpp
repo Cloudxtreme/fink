@@ -172,7 +172,7 @@ int main(int argc,char **argv)
 	pid = fork();
 	if (pid == 0) {
 		//sprintf(buf, "/home/dan/src/my/gobot/gobot.sh 127.0.0.1 %d 2>&1 /dev/null\n",  TCPPORT);
-		sprintf(buf, "/usr/bin/sbcl --noinform --load /home/dan/src/my/gobot/packages.fasl  --load /home/dan/src/my/gobot/gobot.fasl  --load /home/dan/src/my/gobot/gtp.fasl --eval '(progn (gtp-handler:gtp-net-client \"127.0.0.1\" %d) (quit))' \n", TCPPORT);
+		sprintf(buf, "/usr/bin/sbcl --noinform --load /home/dan/src/my/gobot/fink.fasl --eval '(progn (gtp-handler:gtp-net-client \"127.0.0.1\" %d) (quit))' \n", TCPPORT);
 
 		//printf("%s\n", buf);
 		system(buf);

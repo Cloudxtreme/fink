@@ -1,8 +1,9 @@
 (in-package :go-bot)
 
-(defparameter *name* "gobot")
-(defparameter *version* "0.01")
+(defparameter *name* "fink")
+(defparameter *version* "0.2.0-dev")
 (defparameter *author* "Dan Ballard")
+
 (defparameter *default-komi* 5.5)
 (defparameter *komi* *default-komi*)
 (defparameter *default-boardsize* 19)
@@ -11,16 +12,10 @@
 (defparameter *board* nil)
 
 (defparameter *score-functions* '( (score-unused 1)))
-
 (defparameter *passed* nil)
 (defparameter *player* nil)
 (defparameter *last-player* nil)
 
-(defun make-board (size &optional (initial nil))
-  (let ((array (make-array size)))
-    (dotimes (i size)
-      (setf (aref array i) (make-array size :initial-element initial)))
-    array))
 
 (defun set-komi (new-komi)
   (setf *komi* new-komi))
@@ -37,30 +32,10 @@
   ;(init other game specific stuff)
   (init-board))
 
-(defun filter-i-number (number)
-  (if (> number 8) 
-      (1- number)
-      number))
 
-(defun str-to-coord (str)
-  `( ,(filter-i-number (- (char-code (char (string-upcase str) 0)) 65)) ,(- (parse-integer (subseq str 1)) 1)))
 
-(defun filter-i-char (number)
-  (if (>= number 8)
-      (1+ number)
-      number))
-
-(defun coord-to-str (coord)
-  (concatenate 'string (string (code-char (+ 65 (filter-i-char (first coord)))))
-		(write-to-string (+ (second coord) 1))))
     
 
-(defun get-stone (board coord)
-  (aref (aref board (first coord)) (second coord)))
-
-(defun set-stone (board coord val)
-  (setf (aref (aref board (first coord)) (second coord)) val))
-  
 
 (defun play (player coord-str)
   (setf *last-player* player)
