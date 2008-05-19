@@ -24,7 +24,7 @@
   (setf *boardsize* newsize))
 
 (defun init-board ()
-  (setf *board* (make-board *boardsize*))
+  (setf *board* (make-instance 'board :boardsize *boardsize*))
   (setf *passed* nil)
   (setf *player* nil))
 
@@ -34,63 +34,22 @@
 
 
 
-    
+(defmethod play ((board board) coords player)
+  (set-stone (board board) coords player))
+  
 
-
-(defun play (player coord-str)
+(defun do-play (player coord-str)
   (setf *last-player* player)
   (if (string= coord-str "PASS")
       (setf *passed* t)
-      (set-stone *board* (str-to-coord coord-str) player)))
+      ;(set-stone *board* (str-to-coord coord-str) player)))
+      (play *board* (str-to-coord coord-str) player)))
 
-(defun genmove (player)
+(defun do-genmove (player)
   (setf *player* player)
   (if (or (eql *passed* t) (eql *last-player* player))
       "pass"
-      (let ((move (coord-to-str (make-move *board* player))))
-	(play player move)
+      (let ((move (coord-to-str (genmove *board* player))))
+	(do-play player move)
 	move)))
 
-(defun make-move (board player)
-  (select-move (score board player)))
-
-(defun score (board player)
-  (let ((score-board (make-board (length board) 0)))
-    (dolist (slist *score-functions*)
-      (merge-score-board score-board (funcall (first slist) board player) (second slist)))
-    score-board))
-    
-(defun merge-score-board (score-board scores weight)
-  (dotimes (x (length score-board))
-    (dotimes (y (length score-board))
-      (set-stone score-board `(,x ,y) (+ (get-stone score-board `(,x ,y)) (* weight (get-stone scores `(,x ,y))))))))
-      
-
-(defun select-move (board)
-  (let ((highest (get-stone board '(0 0)))
-	(coords (make-array 10 :fill-pointer 0 :adjustable t)))
-    (do ((x 0 (1+ x)))
-	((>= x (length board)) (aref coords (random (length coords))))
-      (do ((y 0 (1+ y)))
-	  ((>= y (length board)))
-	(let ((score (get-stone board `(,x ,y))))
-	  (if (> score highest)
-	      (progn
-		(setf highest score)
-		(setf coords (make-array 10 :fill-pointer 0 :adjustable t ))
-		(vector-push-extend `(,x ,y) coords))
-	      (if (= score highest)
-		  (if (= (random 2) 1)
-		      (vector-push-extend `(,x ,y) coords)))))))))
-      
-
-(defun score-unused (board player)
-  (let ((scores (make-board (length board) 0)))
-    (dotimes (x (length board))
-      (dotimes (y (length board))
-	;body
-	(if (eql (get-stone board `(,x ,y)) nil)
-	    (set-stone scores `(,x ,y) 1))
-	;end
-	))
-    scores))

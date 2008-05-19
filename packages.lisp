@@ -20,10 +20,9 @@
 
 (defpackage board
   (:use :common-lisp)
-  (:export :board
+  (:export :basic-board
 	   :get-stone
 	   :set-stone
-	   :make-board
 	   :coord-to-str
 	   :str-to-coord))
 
@@ -38,6 +37,6 @@
 	    :set-boardsize
 	    :init-board
 	    :init
-	    :play
-	    :genmove
+	    :do-play
+	    :do-genmove
 	    ))
