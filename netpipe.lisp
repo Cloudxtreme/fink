@@ -32,10 +32,10 @@
 
 ;(if-timeout (timeout (format t "socket-receive timed out after ~A seconds.~%" timeout) (force-output) nil)
 
-(defun tcp-read (socket &key (timeout 10))
+(defun tcp-read (socket)
    (when socket
-     (let ((len (parse-integer (tcp-read-raw socket :maxsize 4 :timeout timeout))))
-       (tcp-read-raw socket :maxsize len :timeout timeout))))
+     (let ((len (parse-integer (tcp-read-raw socket :maxsize 4 ))))
+       (tcp-read-raw socket :maxsize len))))
 	
        
 

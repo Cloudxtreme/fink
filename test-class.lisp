@@ -1,6 +1,6 @@
 (defclass class_a ()
   ((a
-   :initarg a
+   :initarg :a
    :initform (make-array 10 :initial-element 0)
    :accessor a)))
 
