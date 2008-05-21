@@ -4,6 +4,11 @@
 ;(asdf:oos 'asdf:load-op :cl-ppcre)
 (require :sb-bsd-sockets)
 
+(defpackage macro-utils
+  (:use :common-lisp)
+  (:export :with-gensyms
+	   :once-only))
+
 (defpackage netpipe
   (:use :common-lisp)
   (:export :tcp-connect
@@ -19,7 +24,8 @@
 	   :gtp-net-client))
 
 (defpackage board
-  (:use :common-lisp)
+  (:use :common-lisp
+	:macro-utils)
   (:export :basic-board
 	   :get-stone
 	   :set-stone
