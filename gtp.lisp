@@ -2,33 +2,39 @@
 
 
 (defparameter *quit?* nil)
-;(defparameter *cputime*)
+;(defparameter *cputime* 0)
 
 
 
 (defun gtp-net-client (server port)
   (go-bot:init)
   (setf *quit?* nil)
-  (let ((socket (tcp-connect server port)))
+  (let ((socket (netpipe:tcp-connect server port)))
     (if (eql socket nil)
 	()
 	(progn
 ;	  (format t "Connection establish, playing...~%")
 	  (do ()
 	      ((or (eql socket nil) (eql *quit?* t)))
-	    (let ((cmd (tcp-read socket)))
+	    (let ((cmd (netpipe:tcp-read socket)))
 	      	(format t "cmd: '~a'~%'" cmd)
-	      (let ((resp (dispatch-gtp-command cmd)))
-	       (print resp)
-		(tcp-print socket (concatenate 'string "= " resp (string #\newline) (string #\newline))))))))))
+	      (let ((resp (inc-cpu-timer (dispatch-gtp-command cmd))))
+		(print resp)
+		(netpipe:tcp-print socket (concatenate 'string "= " resp (string #\newline) (string #\newline))))))))))
 
+(defmacro inc-cpu-timer (body)
+  `(let ((start (get-internal-run-time)) 
+	 (val ,body)
+	 (end (get-internal-run-time)))
+     (setf go-bot:*cputime* (+ go-bot:*cputime* (float (/ (- end start) 1000))))
+     val))
 
 (defun gtp-client ()
   (go-bot:init)
   (setf *quit?* nil)
    (do ()
       ((eql *quit?* t))
-    (format t "= ~a~%~%" (dispatch-gtp-command (read-line t)))))
+    (format t "= ~a~%~%" (inc-cpu-timer (dispatch-gtp-command (read-line t))))))
 
 (defun split-string (string pivot-str)
   (do ((pivot (char pivot-str 0))
@@ -40,6 +46,10 @@
 	(progn (push (subseq string beg i) strings) (setf beg (+ i 1))))))
 
 
+(defparameter *supported_commands* '("name" "version" "protocol_version" "komi" "boardsize" "clear_board" "play" "genmove" "cputime" "quit" "game_score" "lisT_commands" "known_command"))
+
+(defun match-string (str)
+  (lambda (elem) (string-equal str elem)))
 
 (defun dispatch-gtp-command (command-string)
   (let* ((commands (split-string (string-upcase command-string) " "))
@@ -61,9 +71,12 @@
       (genmove (go-bot:do-genmove (char (second commands) 0)))
       (genmove_black (go-bot:do-genmove #\b))
       (genmove_white (go-bot:do-genmove #\w))
+      (cputime (write-to-string go-bot:*cputime*))
       ;(get_random_seed "0")
-      ;(known_command)
-      ;(list_commands)
+      (known_command (write-to-string (count-if (match-string (second commands)) *supported_commands*)))
+      (list_commands (let ((str ""))
+		       (loop for command in *supported_commands* do (setf str (concatenate 'string str command " ")))
+		       str))
       (game_score (format t "Score for ~c: ~s~%" go-bot:*player* (string-trim (string #\newline) (second commands))) "")
       (quit (setf *quit?* t) "")
       (otherwise (concatenate 'string "? unknown command: " (string-downcase (first commands)))))))

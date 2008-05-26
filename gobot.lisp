@@ -10,6 +10,7 @@
 (defparameter *boardsize* *default-boardsize*)
 
 (defparameter *board* nil)
+(defparameter *cputime* 0.0)
 
 (defparameter *passed* nil)
 (defparameter *player* nil)
@@ -29,6 +30,7 @@
 
 (defun init ()
   ;(init other game specific stuff)
+  (setf *cputime* 0.0)
   (init-board))
 
 

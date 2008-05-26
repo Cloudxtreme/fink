@@ -40,6 +40,7 @@
 	    :*version*
 	    :*author*
 	    :*player*
+	    :*cputime*
 	    :set-komi
 	    :set-boardsize
 	    :init-board
