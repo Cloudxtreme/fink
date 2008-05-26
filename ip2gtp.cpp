@@ -39,7 +39,7 @@ using namespace std;
 #define TRUE 1
 #define FALSE 0
 
-#define TCPPORT 10000		/* server port value */
+#define TCPPORT 10001		/* server port value */
 #define BUFSIZE 1024		/* size of i/o buffer */
 #define NOREADS 10		/* number of buffers transferred */
 

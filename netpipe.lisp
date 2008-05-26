@@ -8,7 +8,7 @@
        (sb-bsd-sockets:host-ent-address (sb-bsd-sockets:get-host-by-name hostname))
        nil)) 
 
-(defun tcp-connect (server port); &optional (timeout 10))
+(defun tcp-connect (server port)
   (handler-case
       (let ((socket (make-instance 'sb-bsd-sockets:inet-socket :type :stream :protocol :tcp))) 
 	(sb-bsd-sockets:socket-connect socket  (nslookup server) port) 
@@ -26,7 +26,7 @@
 (defun tcp-print (socket line)
   (tcp-print-raw socket (concatenate 'string (format nil "~04d" (length line)) line)))
 
-(defun tcp-read-raw (socket &key (maxsize 65536)); (timeout 10))
+(defun tcp-read-raw (socket &key (maxsize 65536))
    (when socket
      (values (sb-bsd-sockets:socket-receive socket nil maxsize))))
 
@@ -34,8 +34,8 @@
 
 (defun tcp-read (socket)
    (when socket
-     (let ((len (parse-integer (tcp-read-raw socket :maxsize 4 ))))
-       (tcp-read-raw socket :maxsize len))))
+     (let ((len (parse-integer (tcp-read-raw socket :maxsize 4))))
+       (tcp-read-raw socket :maxsize len ))))
 	
        
 

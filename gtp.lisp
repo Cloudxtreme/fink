@@ -17,9 +17,9 @@
 	  (do ()
 	      ((or (eql socket nil) (eql *quit?* t)))
 	    (let ((cmd (tcp-read socket)))
-	      	;(format t "cmd: '~a'~%'" cmd)
+	      	(format t "cmd: '~a'~%'" cmd)
 	      (let ((resp (dispatch-gtp-command cmd)))
-	       ;(print resp)
+	       (print resp)
 		(tcp-print socket (concatenate 'string "= " resp (string #\newline) (string #\newline))))))))))
 
 

@@ -92,23 +92,71 @@
 
 
 
+(defclass ranked-board (basic-board)
+  ((rank-list
+    :initarg rank-list
+    :initform nil
+    :accessor rank-list)
+   (rank-top-list
+    :initarg rank-top-list
+    :initform nil
+    :accessor rank-top-list)
+   (rank-highest
+    :initarg rank-highest
+    :initform nil
+    :accessor rank-highest)
+   (rank-count
+    :initarg rank-count
+    :initform 0
+    :accessor rank-count)
+   (rank-top-count
+    :initarg rank-top-count
+    :initform 0
+    :accessor rank-top-count)))
+
+
+(defun insert (list comp var)
+  (if (funcall comp (car list) var)
+      (cons var list)
+      (cons (car list) (insert (cdr list) comp var))))
+
+
+(defmethod set-stone :after ((board ranked-board) coords val)
+  (incf (rank-count board))
+  (if (or (eql (rank-highest board) nil) (>= val (rank-highest board)))
+      (progn
+	(setf (rank-list board) (cons `(,val ,coords) (rank-list board)))
+	(if (or (eql (rank-highest board) nil) (> val (rank-highest board)))
+	    (progn 
+	      (setf (rank-highest board) val)
+	      (setf (rank-top-count board) 1)
+	      (setf (rank-top-list board) `((,val ,coords))))
+	    (progn
+	      (incf (rank-top-count board))
+	      (setf (rank-top-list board) (cons `(,val ,coords) (rank-top-list board))))))
+      (if (= (rank-count board) 1)
+	  (setf (rank-list board) `((,val ,coords)))
+	  (setf (rank-list board) (insert (rank-list board) #'(lambda (a b) (>= (first a) (first b))) `(,val ,coords))))))
+	
+	
+	
+	     
+
+		  
 
 (defgeneric prune (board prune-board)
  (:documentation "board is the board we are working from, prune-board is an initially all t's board and each no go place is set to nil"))
+
+(def-over-board prune-placed-stones (coord board prune-board)
+  (if (not (eql (get-stone board coord) nil))
+	(set-stone prune-board coord nil)))
 
 
 (defmethod prune ((board basic-board) prune-board)
   (prune-placed-stones board prune-board))
 
 
-(def-over-board prune-placed-stones (coord board prune-board)
-  (if (not (eql (get-stone board coord) nil))
-	(set-stone prune-board coord nil)))
 
-;(defun prune-placed-stones (board prune-board)
-;  (do-over-board (coord board)
-;    (if (not (eql (get-stone board coord) nil))
-;	(set-stone prune-board coord nil))))
 
 ;(defgeneric prune :after ((board liberty-board) prune-board)
 ;  (prunce-suicide board prunce-board)) 
@@ -123,29 +171,58 @@
     (if (not (eql (get-stone prune-board coord) nil))
 	(set-stone focus-board coord 1))))
 
+(defgeneric search-space (board focus-board score-board player depth)
+    )
+
+(defmacro invert-player (player)
+  (if (eql player #\w)
+      #\b
+      #\w))
+
+; multiplex the search here
+(defmethod search-space ((board basic-board) focus-board score-board player depth)
+  ; (rank-count board) / basic-proc-unit 
+  (do-over-board (coord board)
+    (if (not (eql (get-stone focus-board coord) nil))
+	(let ((newboard (make-instance (class-of board) :from-board board)))
+	  (set-stone newboard coord player)
+	  (set-stone score-board coord (first (genmove newboard  (invert-player player):depth (1- depth))))))))
+  
+  
+(defgeneric score (board player)
+  )
+
+(defmethod score ((board basic-board) player)
+  1)
+
+
+(defgeneric select-move (board) )
+
+(defmethod select-move ((board ranked-board))
+  (if (eql (rank-top-count board) 0)
+      '(-1 (-1 -1))
+      (car (nthcdr (random (rank-top-count board)) (rank-top-list board)))))
 
 
 
+(defgeneric genmove (board player &key))
 
 ; generate a same sized board with a def type
-(defmacro gen-board (board def-type)
-  `(make-instance 'basic-board :boardsize (boardsize ,board) :board-def-type ,def-type))
+(defmacro gen-board (board def-type &optional (class ''basic-board))
+  `(make-instance ,class :boardsize (boardsize ,board) :board-def-type ,def-type))
 
-(defmethod genmove ((board basic-board) player)
-  (let ((prune-board (gen-board board t))
-	(focus-board (gen-board board nil))
-	(score-board (gen-board board nil)))
-    
-    (prune board prune-board)))
-    (focus board prune-board focus-board player)
-;    (score board focus-board score-board player)
-;    (select-move score-board)))
+(defmethod genmove ((board basic-board) player &key (depth 1))
+  (if (= depth 0)
+      `( ,(score board player) nil)
+      (let ((score-board (make-instance 'ranked-board :boardsize (boardsize board) :board-def-type nil))   ;(gen-board board 0 'ranked-board))
+	    (prune-board (gen-board board t))
+	    (focus-board (gen-board board nil)))
+	(progn
+	  (prune board prune-board)
+	  (focus board prune-board focus-board player)
+	  (search-space board focus-board score-board player depth)
+	  (select-move score-board)))))
   
-
-
-
-
-
 ;(defun make-move (board player)
 ;  (select-move (score board player)))
 

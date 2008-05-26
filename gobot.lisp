@@ -1,7 +1,7 @@
 (in-package :go-bot)
 
 (defparameter *name* "fink")
-(defparameter *version* "0.2.0-dev")
+(defparameter *version* "0.2.0")
 (defparameter *author* "Dan Ballard")
 
 (defparameter *default-komi* 5.5)
@@ -11,7 +11,6 @@
 
 (defparameter *board* nil)
 
-(defparameter *score-functions* '( (score-unused 1)))
 (defparameter *passed* nil)
 (defparameter *player* nil)
 (defparameter *last-player* nil)
@@ -24,7 +23,7 @@
   (setf *boardsize* newsize))
 
 (defun init-board ()
-  (setf *board* (make-instance 'board :boardsize *boardsize*))
+  (setf *board* (make-instance 'basic-board :boardsize *boardsize*))
   (setf *passed* nil)
   (setf *player* nil))
 
@@ -34,8 +33,8 @@
 
 
 
-(defmethod play ((board board) coords player)
-  (set-stone (board board) coords player))
+(defun play (board coords player)
+  (set-stone board coords player))
   
 
 (defun do-play (player coord-str)
@@ -49,7 +48,12 @@
   (setf *player* player)
   (if (or (eql *passed* t) (eql *last-player* player))
       "pass"
-      (let ((move (coord-to-str (genmove *board* player))))
-	(do-play player move)
-	move)))
+      (let* ((move (coord-to-str (genmove *board* player)))
+	     (score (first move))
+	     (coord (coord-to-str (second move))))
+	(if (< score 0)
+	    "pass"
+	    (progn
+	      (do-play player coord)
+	      coord)))))
 

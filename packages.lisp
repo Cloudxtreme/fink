@@ -30,7 +30,8 @@
 	   :get-stone
 	   :set-stone
 	   :coord-to-str
-	   :str-to-coord))
+	   :str-to-coord
+	   :genmove))
 
 (defpackage go-bot
   (:use :common-lisp
