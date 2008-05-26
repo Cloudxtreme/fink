@@ -48,7 +48,7 @@
   (setf *player* player)
   (if (or (eql *passed* t) (eql *last-player* player))
       "pass"
-      (let* ((move (coord-to-str (genmove *board* player)))
+      (let* ((move (genmove *board* player))
 	     (score (first move))
 	     (coord (coord-to-str (second move))))
 	(if (< score 0)
