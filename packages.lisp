@@ -27,11 +27,19 @@
   (:use :common-lisp
 	:macro-utils)
   (:export :basic-board
+	   :ranked-board
 	   :get-stone
 	   :set-stone
 	   :coord-to-str
 	   :str-to-coord
 	   :genmove))
+
+(defpackage liberty-shape
+  (:use :common-lisp
+	:macro-utils
+	:board)
+  (:export :liberty-board))
+   
 
 (defpackage go-bot
   (:use :common-lisp

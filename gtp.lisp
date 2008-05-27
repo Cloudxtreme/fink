@@ -17,9 +17,9 @@
 	  (do ()
 	      ((or (eql socket nil) (eql *quit?* t)))
 	    (let ((cmd (netpipe:tcp-read socket)))
-	      	(format t "cmd: '~a'~%'" cmd)
+	      	;(format t "cmd: '~a'~%'" cmd)
 	      (let ((resp (inc-cpu-timer (dispatch-gtp-command cmd))))
-		(print resp)
+		;(print resp)
 		(netpipe:tcp-print socket (concatenate 'string "= " resp (string #\newline) (string #\newline))))))))))
 
 (defmacro inc-cpu-timer (body)
@@ -46,7 +46,7 @@
 	(progn (push (subseq string beg i) strings) (setf beg (+ i 1))))))
 
 
-(defparameter *supported_commands* '("name" "version" "protocol_version" "komi" "boardsize" "clear_board" "play" "genmove" "cputime" "quit" "game_score" "lisT_commands" "known_command"))
+(defparameter *supported_commands* '("name" "version" "protocol_version" "komi" "boardsize" "clear_board" "play" "genmove" "cputime" "quit" "game_score" "list_commands" "known_command"))
 
 (defun match-string (str)
   (lambda (elem) (string-equal str elem)))

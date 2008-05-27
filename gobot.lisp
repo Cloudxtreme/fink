@@ -1,7 +1,7 @@
 (in-package :go-bot)
 
 (defparameter *name* "fink")
-(defparameter *version* "0.2.0")
+(defparameter *version* "0.3.0-dev")
 (defparameter *author* "Dan Ballard")
 
 (defparameter *default-komi* 5.5)

@@ -114,6 +114,14 @@
     :initform 0
     :accessor rank-top-count)))
 
+(defmacro copy-slots (slots src dst)
+  `(progn ,@(loop for slot in slots collect `(setf (,slot ,src) (,slot ,dst)))))
+
+(defmethod initialize-instance :after ((board ranked-board) &key from-board)
+  (if (eql from-board nil)
+      (setf (rank-highest board) (rank-highest from-board))
+      
+
 
 (defun insert (list comp var)
   (if (funcall comp (car list) var)
