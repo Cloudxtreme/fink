@@ -16,6 +16,9 @@
 (defparameter *player* nil)
 (defparameter *last-player* nil)
 
+(defclass composite-board (liberty-board)
+  ((final
+   :initform 0)))
 
 (defun set-komi (new-komi)
   (setf *komi* new-komi))
@@ -24,12 +27,15 @@
   (setf *boardsize* newsize))
 
 (defun init-board ()
-  (setf *board* (make-instance 'basic-board :boardsize *boardsize*))
+  (setf *board* (make-instance 'composite-board :boardsize *boardsize*))
   (setf *passed* nil)
-  (setf *player* nil))
+  (setf *player* nil)
+  (setf *last-player* nil))
+
 
 (defun init ()
   ;(init other game specific stuff)
+  (setf *random-state* (make-random-state t))
   (setf *cputime* 0.0)
   (init-board))
 
@@ -44,18 +50,26 @@
   (if (string= coord-str "PASS")
       (setf *passed* t)
       ;(set-stone *board* (str-to-coord coord-str) player)))
-      (play *board* (str-to-coord coord-str) player)))
+      (progn 
+	(setf *passed* nil)
+	(play *board* (str-to-coord coord-str) player))))
 
 (defun do-genmove (player)
   (setf *player* player)
   (if (or (eql *passed* t) (eql *last-player* player))
       "pass"
       (let* ((move (genmove *board* player))
-	     (score (first move))
+	     (board-score (first move))
 	     (coord (coord-to-str (second move))))
-	(if (< score 0)
+	(if (< board-score 0)
 	    "pass"
 	    (progn
 	      (do-play player coord)
 	      coord)))))
 
+
+(defun analyze-score ()
+  (analyze-board-score *board* *player*))
+
+(defun analyze-liberty ()
+  (liberty-to-analyze *board*))

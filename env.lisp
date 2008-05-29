@@ -16,10 +16,11 @@
   (compile-file (concatenate 'string *src-root* "macro-utils.lisp"))
   (compile-file (concatenate 'string *src-root* "netpipe.lisp"))
   (compile-file (concatenate 'string *src-root* "board.lisp"))
+  (compile-file (concatenate 'string *src-root* "liberty-shape.lisp"))
   (compile-file (concatenate 'string *src-root* "gobot.lisp"))
   (compile-file (concatenate 'string *src-root* "gtp.lisp"))
   (compile-file (concatenate 'string *src-root* "fink.lisp")))
 
 (recompile)
 
-
+(load (concatenate 'string *src-root* "fink.fasl"))

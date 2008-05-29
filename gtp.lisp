@@ -4,6 +4,13 @@
 (defparameter *quit?* nil)
 ;(defparameter *cputime* 0)
 
+(defmacro inc-cpu-timer (body)
+  `(let ((start (get-internal-run-time)) 
+	 (val ,body)
+	 (end (get-internal-run-time)))
+     (setf go-bot:*cputime* (+ go-bot:*cputime* (float (/ (- end start) 1000))))
+     val))
+
 
 
 (defun gtp-net-client (server port)
@@ -17,17 +24,10 @@
 	  (do ()
 	      ((or (eql socket nil) (eql *quit?* t)))
 	    (let ((cmd (netpipe:tcp-read socket)))
-	      	;(format t "cmd: '~a'~%'" cmd)
+	      	;(format t "cmd: '~a'~%" cmd)
 	      (let ((resp (inc-cpu-timer (dispatch-gtp-command cmd))))
-		;(print resp)
+		;(format t "resp: '~a'~%" resp)
 		(netpipe:tcp-print socket (concatenate 'string "= " resp (string #\newline) (string #\newline))))))))))
-
-(defmacro inc-cpu-timer (body)
-  `(let ((start (get-internal-run-time)) 
-	 (val ,body)
-	 (end (get-internal-run-time)))
-     (setf go-bot:*cputime* (+ go-bot:*cputime* (float (/ (- end start) 1000))))
-     val))
 
 (defun gtp-client ()
   (go-bot:init)
@@ -46,16 +46,22 @@
 	(progn (push (subseq string beg i) strings) (setf beg (+ i 1))))))
 
 
-(defparameter *supported_commands* '("name" "version" "protocol_version" "komi" "boardsize" "clear_board" "play" "genmove" "cputime" "quit" "game_score" "list_commands" "known_command"))
+(defparameter *supported_commands* '("name" "version" "protocol_version" "komi" "boardsize" "clear_board" "play" "genmove" "cputime" "quit" "game_score" "list_commands" "known_command" "gogui-analyze_commands" ))
+
+(defparameter *analyze_commands* '("gfx/Liberties/liberties" "gfx/Scores/scores"))
+
+
+
+
 
 (defun match-string (str)
   (lambda (elem) (string-equal str elem)))
 
 (defun dispatch-gtp-command (command-string)
-  (let* ((commands (split-string (string-upcase command-string) " "))
-					;(cl-ppcre:split "\\s+" (string-upcase command-string)))
+  (let* ((commands (split-string (string-trim #(#\newline #\space) (string-upcase command-string)) " "))
+					;(cl-ppcre:split "[\\s\\n]+" (string-upcase command-string)))
 	 (command (intern (first commands) :gtp-handler)))
-    ;(print command)
+    ;(format t "~a~%" commands)
     (case command
       (name go-bot:*name*)
       (version go-bot:*version*)
@@ -77,7 +83,12 @@
       (list_commands (let ((str ""))
 		       (loop for command in *supported_commands* do (setf str (concatenate 'string str command " ")))
 		       str))
+      (gogui-analyze_commands (let ((str ""))
+				(loop for command in *analyze_commands* do (setf str (concatenate 'string str command (string #\newline))))
+				(string-trim #(#\newline) str)))
       (game_score (format t "Score for ~c: ~s~%" go-bot:*player* (string-trim (string #\newline) (second commands))) "")
+      (liberties (string-trim #(#\newline) (analyze-liberty)))
+      (scores  (string-trim #(#\newline)(analyze-score)))
       (quit (setf *quit?* t) "")
       (otherwise (concatenate 'string "? unknown command: " (string-downcase (first commands)))))))
   

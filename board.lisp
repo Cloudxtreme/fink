@@ -21,7 +21,9 @@
       number))
 
 (defun str-to-coord (str)
-  `( ,(filter-i-number (- (char-code (char (string-upcase str) 0)) 65)) ,(- (parse-integer (subseq str 1)) 1)))
+ `(,(abs (- (parse-integer (subseq str 1)) 19))  ,(filter-i-number (- (char-code (char (string-upcase str) 0)) 65))))
+
+;  `( ,(filter-i-number (- (char-code (char (string-upcase str) 0)) 65)) ,(- (parse-integer (subseq str 1)) 1)))
 
 (defun filter-i-char (number)
   (if (>= number 8)
@@ -29,8 +31,11 @@
       number))
 
 (defun coord-to-str (coord)
-  (concatenate 'string (string (code-char (+ 65 (filter-i-char (first coord)))))
-		(write-to-string (+ (second coord) 1))))
+  (concatenate 'string (string (code-char (+ 65 (filter-i-char (second coord)))))
+	       (write-to-string (+ (- (first coord)) 19))))
+
+;  (concatenate 'string (string (code-char (+ 65 (filter-i-char (first coord)))))
+;		(write-to-string (+ (second coord) 1))))
 
 
 
@@ -69,6 +74,7 @@
 ;(defgeneric (setf stone) (val coords
 
 (defmethod initialize-instance :after ((board basic-board) &key from-board)
+;  (format t "init basic-board~%")
   (if (eql from-board nil)
       (setf (board board) (make-2d-board (boardsize board) (board-def-type board)))
       (progn
@@ -114,12 +120,15 @@
     :initform 0
     :accessor rank-top-count)))
 
-(defmacro copy-slots (slots src dst)
-  `(progn ,@(loop for slot in slots collect `(setf (,slot ,src) (,slot ,dst)))))
+(defmacro copy-slots (slots dst src)
+  `(progn ,@(loop for slot in slots collect `(setf (,slot ,dst) (,slot ,src)))))
 
 (defmethod initialize-instance :after ((board ranked-board) &key from-board)
-  (if (eql from-board nil)
-      (setf (rank-highest board) (rank-highest from-board))
+  (if (not (eql from-board nil))
+      (progn
+	(copy-slots (rank-highest rank-count rank-top-count) board from-board)
+	(setf (rank-list board) (copy-seq (rank-list from-board)))
+	(setf (rank-top-list board) (copy-seq (rank-top-list from-board))))))
       
 
 
@@ -130,6 +139,7 @@
 
 
 (defmethod set-stone :after ((board ranked-board) coords val)
+;  (format t "~a ~a~%" coords val)
   (incf (rank-count board))
   (if (or (eql (rank-highest board) nil) (>= val (rank-highest board)))
       (progn
@@ -198,13 +208,14 @@
   
   
 (defgeneric score (board player)
-  )
+   (:method-combination + :most-specific-last))
 
-(defmethod score ((board basic-board) player)
+(defmethod score + ((board basic-board) player)
   1)
 
 
-(defgeneric select-move (board) )
+(defgeneric select-move (board) 
+  )
 
 (defmethod select-move ((board ranked-board))
   (if (eql (rank-top-count board) 0)
@@ -221,7 +232,7 @@
 
 (defmethod genmove ((board basic-board) player &key (depth 1))
   (if (= depth 0)
-      `( ,(score board player) nil)
+      `( ,(score board (invert-player player)) nil)
       (let ((score-board (make-instance 'ranked-board :boardsize (boardsize board) :board-def-type nil))   ;(gen-board board 0 'ranked-board))
 	    (prune-board (gen-board board t))
 	    (focus-board (gen-board board nil)))
@@ -230,6 +241,33 @@
 	  (focus board prune-board focus-board player)
 	  (search-space board focus-board score-board player depth)
 	  (select-move score-board)))))
+
+(defun board-to-analyze (board)
+  (let ((resp "LABEL "))
+    (dotimes (x (length board))
+      ;(format t "x:~a~%" x)
+      (dotimes (y (length board))
+	;(format t "y:~a~%" y)
+	(let ((coord `(,x ,y)))
+	  
+	  (setf resp (concatenate 'string resp (coord-to-str coord) " "
+		       (if (eql (get-2d-stone board coord) nil)
+			   "0 "
+			   (write-to-string (get-2d-stone board coord))) " ")))
+      (concatenate 'string resp '(#\newline))))
+	resp))
+
+(defun analyze-board-score (board player)
+  (let ((score-board (make-instance 'basic-board :boardsize (boardsize board) :board-def-type nil)))
+    (progn
+      (do-over-board (coord board)
+	(if (eql (get-stone board coord) nil)
+	    (let ((newboard (make-instance (class-of board) :from-board board)))
+	      (set-stone newboard coord player)
+	      (set-stone score-board coord (first (score newboard player))))))
+      (board-to-analyze (board score-board)))))
+
+
   
 ;(defun make-move (board player)
 ;  (select-move (score board player)))

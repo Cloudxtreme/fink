@@ -7,5 +7,6 @@
 (load (concatenate 'string *src-root* "macro-utils.fasl"))
 (load (concatenate 'string *src-root* "netpipe.fasl"))
 (load (concatenate 'string *src-root* "board.fasl"))
+(load (concatenate 'string *src-root* "liberty-shape.fasl"))
 (load (concatenate 'string *src-root* "gobot.fasl"))
 (load (concatenate 'string *src-root* "gtp.fasl"))

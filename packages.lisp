@@ -17,33 +17,45 @@
 	   :tcp-read))
 
 
-(defpackage gtp-handler
-  (:use :common-lisp
-	:netpipe)
-  (:export :gtp-client
-	   :gtp-net-client))
+
 
 (defpackage board
   (:use :common-lisp
 	:macro-utils)
   (:export :basic-board
+	   :boardsize
 	   :ranked-board
 	   :get-stone
 	   :set-stone
 	   :coord-to-str
 	   :str-to-coord
-	   :genmove))
+	   :genmove
+	   :copy-2d-board
+	   :make-2d-board
+	   :do-over-board
+	   :def-over-board
+	   :set-2d-stone
+	   :get-2d-stone
+	   :invert-player
+	   :prune
+	   :focus
+	   :score
+	   :copy-slots
+	   :analyze-board-score
+	   :board-to-analyze))
 
 (defpackage liberty-shape
   (:use :common-lisp
 	:macro-utils
 	:board)
-  (:export :liberty-board))
+  (:export :liberty-board
+	   :liberty-to-analyze))
    
 
 (defpackage go-bot
   (:use :common-lisp
-	:board)
+	:board
+	:liberty-shape)
   (:export :*name*
 	    :*version*
 	    :*author*
@@ -55,4 +67,15 @@
 	    :init
 	    :do-play
 	    :do-genmove
+	    :composite-board
+	    :analyze-score
+	    :analyze-liberty
 	    ))
+
+(defpackage gtp-handler
+  (:use :common-lisp
+	:netpipe
+	:go-bot)
+  (:export :gtp-client
+	   :gtp-net-client))
+
