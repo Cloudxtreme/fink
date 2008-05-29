@@ -55,12 +55,14 @@
 	(play *board* (str-to-coord coord-str) player))))
 
 (defun do-genmove (player)
+;  (format t "do-genmove ~a~%" player)
   (setf *player* player)
   (if (or (eql *passed* t) (eql *last-player* player))
       "pass"
       (let* ((move (genmove *board* player))
 	     (board-score (first move))
 	     (coord (coord-to-str (second move))))
+	;(format t "score: ~a for player ~a ~%" board-score player)
 	(if (< board-score 0)
 	    "pass"
 	    (progn

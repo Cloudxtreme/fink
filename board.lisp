@@ -193,9 +193,9 @@
     )
 
 (defmacro invert-player (player)
-  (if (eql player #\w)
-      #\b
-      #\w))
+  `(if (eql ,player #\W)
+      #\B
+      #\W))
 
 ; multiplex the search here
 (defmethod search-space ((board basic-board) focus-board score-board player depth)
@@ -231,6 +231,7 @@
   `(make-instance ,class :boardsize (boardsize ,board) :board-def-type ,def-type))
 
 (defmethod genmove ((board basic-board) player &key (depth 1))
+;  (format t "genmove depth ~a player ~a~%" depth player)
   (if (= depth 0)
       `( ,(score board (invert-player player)) nil)
       (let ((score-board (make-instance 'ranked-board :boardsize (boardsize board) :board-def-type nil))   ;(gen-board board 0 'ranked-board))
