@@ -2,11 +2,11 @@
 
 (defparameter *src-root* "/home/dan/src/my/gobot/")
 
+(defparameter *src-files* '("packages" "macro-utils" "netpipe" "board" "liberty" "shape" "gobot" "gtp"))
 
-(load (concatenate 'string *src-root* "packages.fasl"))
-(load (concatenate 'string *src-root* "macro-utils.fasl"))
-(load (concatenate 'string *src-root* "netpipe.fasl"))
-(load (concatenate 'string *src-root* "board.fasl"))
-(load (concatenate 'string *src-root* "liberty-shape.fasl"))
-(load (concatenate 'string *src-root* "gobot.fasl"))
-(load (concatenate 'string *src-root* "gtp.fasl"))
+(defun load-files ()
+  (loop for file in *src-files* do (load (concatenate 'string *src-root* file ".fasl"))))
+
+
+(load-files)
+

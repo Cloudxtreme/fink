@@ -44,18 +44,26 @@
 	   :analyze-board-score
 	   :board-to-analyze))
 
-(defpackage liberty-shape
+(defpackage liberty-board
   (:use :common-lisp
 	:macro-utils
 	:board)
   (:export :liberty-board
 	   :liberty-to-analyze))
    
+(defpackage shape-board
+  (:use :common-lisp
+	:macro-utils
+	:board)
+  (:export :shape-board
+	   :shape-to-analyze))
+
 
 (defpackage go-bot
   (:use :common-lisp
 	:board
-	:liberty-shape)
+	:liberty-board
+	:shape-board)
   (:export :*name*
 	    :*version*
 	    :*author*
