@@ -21,7 +21,6 @@
   (let ((coords `( (0 0) (,max 0) (0 ,max) (,max ,max))))
     (loop for coord in coords do (set-2d-stone  (liberty-board board) coord stone))))
 
-     
 (defmethod initialize-instance :after ((board liberty-board) &key from-board)
 ;  (format t "init liberty-board~%")
   (if (eql from-board nil)
@@ -49,17 +48,6 @@
      (set-2d-stone (liberty-board ,board) ,coords (1- (get-2d-stone (liberty-board ,board) ,coords)))
     (inc-liberties ,board ,coords -1)))
 
-(defmacro do-over-adjacent  ((coords-var board coords) &body body)
-  `(let* ((x (first ,coords))
-	  (y (second ,coords))
-	  (up (1- x))
-	  (down (1+ x))
-	  (left (1- y))
-	  (right (1+ y)))
-     (if (>= up 0) (let ((,coords-var `(,up ,y))) ,@body))
-     (if (>= left 0) (let ((,coords-var `(,x ,left))) ,@body))
-     (if (< down (boardsize ,board)) (let ((,coords-var `(,down ,y))) ,@body))
-     (if (< right (boardsize ,board)) (let ((,coords-var `(,x ,right))) ,@body))))
 
 (defmethod set-stone :after ((board liberty-board) coords val)
   (inc-liberties board coords (get-2d-stone (liberty-board board) coords))

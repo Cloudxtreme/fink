@@ -12,9 +12,6 @@
       (setf (aref copy i) (copy-seq (aref board i))))
     copy))
 
-
-	      
-
 (defun filter-i-number (number)
   (if (> number 8) 
       (1- number)
@@ -96,6 +93,17 @@
      (do-over-board (,coord ,board)
        (progn ,@body))))
 
+(defmacro do-over-adjacent  ((coords-var board coords) &body body)
+  `(let* ((x (first ,coords))
+	  (y (second ,coords))
+	  (up (1- x))
+	  (down (1+ x))
+	  (left (1- y))
+	  (right (1+ y)))
+     (if (>= up 0) (let ((,coords-var `(,up ,y))) ,@body))
+     (if (>= left 0) (let ((,coords-var `(,x ,left))) ,@body))
+     (if (< down (boardsize ,board)) (let ((,coords-var `(,down ,y))) ,@body))
+     (if (< right (boardsize ,board)) (let ((,coords-var `(,x ,right))) ,@body))))
 
 
 (defclass ranked-board (basic-board)

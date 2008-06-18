@@ -42,7 +42,9 @@
 	   :score
 	   :copy-slots
 	   :analyze-board-score
-	   :board-to-analyze))
+	   :board-to-analyze
+;	   :do-over-2d-adjacent
+	   :do-over-adjacent))
 
 (defpackage liberty-board
   (:use :common-lisp
