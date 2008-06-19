@@ -1,5 +1,23 @@
 (in-package :board)
 
+(defmacro do-with-copy-of-array ((itr-name copy-name array) &body body)
+    `(let ((,copy-name (make-array (length ,array) :fill-pointer (fill-pointer ,array)  :adjustable t)))
+       (dotimes (,itr-name (length ,array))
+	 ,@body)
+       ,copy-name))
+
+(defun copy-array (array)
+  (do-with-copy-of-array (i copy array)
+    (setf (aref copy i) (aref array i))))
+
+(defun copy-2d-array (array)
+  (do-with-copy-of-array (i copy array)
+    (setf (aref copy i) 
+	  (if (eql (aref array i) nil)
+	      nil
+	      (copy-array (aref array i))))))
+
+
 (defun make-2d-board (size &optional (initial nil))
   (let ((array (make-array size)))
     (dotimes (i size)
@@ -11,6 +29,7 @@
     (dotimes (i (length board))
       (setf (aref copy i) (copy-seq (aref board i))))
     copy))
+
 
 (defun filter-i-number (number)
   (if (> number 8) 

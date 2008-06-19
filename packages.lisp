@@ -30,6 +30,9 @@
 	   :coord-to-str
 	   :str-to-coord
 	   :genmove
+	   :do-with-copy-of-array
+	   :copy-array
+	   :copy-2d-array
 	   :copy-2d-board
 	   :make-2d-board
 	   :do-over-board
@@ -58,7 +61,17 @@
 	:macro-utils
 	:board)
   (:export :shape-board
-	   :shape-to-analyze))
+	   :shapes-to-analyze
+	   :shape-id))
+
+(defpackage liberty-shape-board
+  (:use :common-lisp
+	:macro-utils
+	:board
+	:liberty-board
+	:shape-board)
+  (:export :liberty-shape-board
+	   :liberty-shape-to-analyze))
 
 
 (defpackage go-bot
@@ -80,6 +93,7 @@
 	    :composite-board
 	    :analyze-score
 	    :analyze-liberty
+	    :analyze-shapes
 	    ))
 
 (defpackage gtp-handler

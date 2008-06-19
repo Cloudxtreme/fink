@@ -48,7 +48,7 @@
 
 (defparameter *supported_commands* '("name" "version" "protocol_version" "komi" "boardsize" "clear_board" "play" "genmove" "cputime" "quit" "game_score" "list_commands" "known_command" "gogui-analyze_commands" ))
 
-(defparameter *analyze_commands* '("gfx/Liberties/liberties" "gfx/Scores/scores"))
+(defparameter *analyze_commands* '("gfx/Liberties/liberties" "gfx/Shapes/shapes" "gfx/Scores/scores"))
 
 
 
@@ -88,6 +88,7 @@
 				(string-trim #(#\newline) str)))
       (game_score (format t "Score for ~c: ~s~%" go-bot:*player* (string-trim (string #\newline) (second commands))) "")
       (liberties (string-trim #(#\newline) (analyze-liberty)))
+      (shapes (string-trim #(#\newline) (analyze-shapes)))
       (scores  (string-trim #(#\newline)(analyze-score)))
       (quit (setf *quit?* t) "")
       (otherwise (concatenate 'string "? unknown command: " (string-downcase (first commands)))))))
