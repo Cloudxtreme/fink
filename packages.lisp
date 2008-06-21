@@ -7,7 +7,9 @@
 (defpackage macro-utils
   (:use :common-lisp)
   (:export :with-gensyms
-	   :once-only))
+	   :once-only
+	   :while
+	   :until))
 
 (defpackage netpipe
   (:use :common-lisp)
@@ -54,7 +56,8 @@
 	:macro-utils
 	:board)
   (:export :liberty-board
-	   :liberty-to-analyze))
+	   :liberty-to-analyze
+	   :liberty))
    
 (defpackage shape-board
   (:use :common-lisp
@@ -62,7 +65,12 @@
 	:board)
   (:export :shape-board
 	   :shapes-to-analyze
-	   :shape-id))
+	   :shape-id
+	   :shapes-points
+	   :shape-sizes
+	   :next-shape-id
+	   :convert-shape
+	   :size-of-shape))
 
 (defpackage liberty-shape-board
   (:use :common-lisp
@@ -78,7 +86,8 @@
   (:use :common-lisp
 	:board
 	:liberty-board
-	:shape-board)
+	:shape-board
+	:liberty-shape-board)
   (:export :*name*
 	    :*version*
 	    :*author*
@@ -94,6 +103,7 @@
 	    :analyze-score
 	    :analyze-liberty
 	    :analyze-shapes
+	    :analyze-shape-liberties
 	    ))
 
 (defpackage gtp-handler

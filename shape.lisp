@@ -44,15 +44,18 @@
 (defmacro size-of-shape (board shape-id)
   `(aref (shape-sizes ,board) ,shape-id))
 
-(defun convert-shape (board shape-id to-id)
+(defgeneric convert-shape (board shape-id to-id))
+
+(defmethod convert-shape ((board shape-board) shape-id to-id)
 ;  (format t "convert-shape ~a to ~a~%" shape-id to-id)
   (loop for index from 0 to (1- (length (aref (shapes-points board) shape-id))) do
        (add-to-shape board (aref (aref (shapes-points board) shape-id) index ) to-id))
   (setf (aref (shapes-points board) shape-id) (make-array 1 :fill-pointer 0 :adjustable t))
   (setf (aref (shape-sizes board) shape-id) 0))
 
+(defgeneric join-shapes (board nexus shapes-list))
 
-(defun join-shapes (board nexus shapes-list)
+(defmethod join-shapes ((board shape-board) nexus shapes-list)
   (let ((biggest-shape (first shapes-list)))
     (loop for shape-id in shapes-list do 
 	 (if (>  (size-of-shape board shape-id) (size-of-shape board biggest-shape))

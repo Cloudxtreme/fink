@@ -12,7 +12,7 @@
 (defparameter *src-root* "/home/dan/src/my/gobot/")
 
 
-(defparameter *src-files* '("packages" "macro-utils" "netpipe" "board" "liberty" "shape" "gobot" "gtp"  "fink"))
+(defparameter *src-files* '("packages" "macro-utils" "netpipe" "board" "liberty" "shape" "liberty-shape" "gobot" "gtp"  "fink"))
 (defun recompile ()
   (loop for file in *src-files* do (compile-file (concatenate 'string *src-root* file ".lisp"))))
 

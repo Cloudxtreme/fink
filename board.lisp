@@ -56,7 +56,10 @@
 
 
 (defun get-2d-stone (board coord)
-  (aref (aref board (first coord)) (second coord)))
+  (if (not (listp coord))
+      (progn
+	(format t "MASSIVE ERROR!~%trying to access coord:~a on board" coord))
+      (aref (aref board (first coord)) (second coord))))
 
 (defun set-2d-stone (board coord val)
   (setf (aref (aref board (first coord)) (second coord)) val))

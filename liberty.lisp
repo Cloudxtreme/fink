@@ -13,6 +13,9 @@
     :initarg white-liberties
     :accessor white-liberties)))
 
+(defmacro liberty (board coords)
+  `(get-2d-stone (liberty-board ,board) ,coords))
+
 (defun set-symetric-edge (board index stone max)
   (let ((coords `( (0 ,index) (,index 0) (,max ,index) (,index ,max))))
     (loop for coord in coords do (set-2d-stone  (liberty-board board) coord stone))))

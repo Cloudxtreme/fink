@@ -16,7 +16,7 @@
 (defparameter *player* nil)
 (defparameter *last-player* nil)
 
-(defclass composite-board (shape-board)
+(defclass composite-board (liberty-shape-board)
   ((final
    :initform 0)))
 
@@ -78,3 +78,6 @@
 
 (defun analyze-shapes ()
   (shapes-to-analyze *board*))
+
+(defun analyze-shape-liberties ()
+  (liberty-shape-to-analyze *board*))
