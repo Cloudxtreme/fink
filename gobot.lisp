@@ -60,14 +60,20 @@
   (if (or (eql *passed* t) (eql *last-player* player))
       "pass"
       (let* ((move (genmove *board* player))
-	     (board-score (first move))
-	     (coord (coord-to-str (second move))))
+;	     (board-score (first move))
+	     (coord (second move)))
 	;(format t "score: ~a for player ~a ~%" board-score player)
-	(if (< board-score 0)
-	    "pass"
-	    (progn
-	      (do-play player coord)
-	      coord)))))
+	(if (listp coord)  ; string= coord "pass"))
+	    (let ((coord-str (coord-to-str coord)))
+	      (do-play player coord-str)
+	      coord-str)
+	    coord))))
+	 
+	;(if (< board-score 0)
+	;    "pass"
+	;    (progn
+	;      (do-play player coord)
+	;      coord)))))
 
 
 (defun analyze-score ()
@@ -81,3 +87,6 @@
 
 (defun analyze-shape-liberties ()
   (liberty-shape-to-analyze *board*))
+
+(defun analyze-shape-stone-liberties ()
+  (liberty-shape-stone-to-analyze *board*))

@@ -9,7 +9,8 @@
   (:export :with-gensyms
 	   :once-only
 	   :while
-	   :until))
+	   :until
+	   :pdebug))
 
 (defpackage netpipe
   (:use :common-lisp)
@@ -29,6 +30,7 @@
 	   :ranked-board
 	   :get-stone
 	   :set-stone
+	   :get-player
 	   :coord-to-str
 	   :str-to-coord
 	   :genmove
@@ -70,7 +72,7 @@
 	   :shape-sizes
 	   :next-shape-id
 	   :convert-shape
-	   :size-of-shape))
+	   :shape-size))
 
 (defpackage liberty-shape-board
   (:use :common-lisp
@@ -79,7 +81,8 @@
 	:liberty-board
 	:shape-board)
   (:export :liberty-shape-board
-	   :liberty-shape-to-analyze))
+	   :liberty-shape-to-analyze
+	   :liberty-shape-stone-to-analyze))
 
 
 (defpackage go-bot
@@ -104,6 +107,7 @@
 	    :analyze-liberty
 	    :analyze-shapes
 	    :analyze-shape-liberties
+	    :analyze-shape-stone-liberties
 	    ))
 
 (defpackage gtp-handler

@@ -1,16 +1,19 @@
 (in-package macro-utils)
 
-(defun test-while (n)
-  (let ((i 0))
-    (while (< i n)
-      (format t "~a~%" i)
-      (incf i))))
+;(defun test-while (n)
+;  (let ((i 0))
+;    (while (< i n)
+;      (format t "~a~%" i)
+;      (incf i))))
 
-(defun test-until (n)
-  (let ((i 0))
-    (until (= i n)
-      (format t "~a~%" i)
-      (incf i))))
+;(defun test-until (n)
+;  (let ((i 0))
+;    (until (= i n)
+;      (format t "~a~%" i)
+;      (incf i))))
+
+(defmacro pdebug (&body body)
+  `(format *error-output* ,@body))
 
 (defmacro while (test-case &body body)
   `(do ()
@@ -25,6 +28,8 @@
 (defmacro with-gensyms ((&rest names) &body body)
   `(let ,(loop for n in names collect `(,n (gensym)))
     ,@body))
+
+
 
 (defmacro once-only ((&rest names) &body body)
   (let ((gensyms (loop for n in names collect (gensym))))

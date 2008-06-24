@@ -48,7 +48,7 @@
 
 (defparameter *supported_commands* '("name" "version" "protocol_version" "komi" "boardsize" "clear_board" "play" "genmove" "cputime" "quit" "game_score" "list_commands" "known_command" "gogui-analyze_commands" ))
 
-(defparameter *analyze_commands* '("gfx/Liberties/liberties" "gfx/Shapes/shapes" "gfx/Shape-Liberties/shape-liberties"))
+(defparameter *analyze_commands* '("gfx/Liberties/liberties" "gfx/Shapes/shapes" "gfx/Shape-Liberties/shape-liberties" "gfx/Shape-Stone-Liberties/shape-stone-liberties"))
 
 
 
@@ -90,6 +90,7 @@
       (liberties (string-trim #(#\newline) (analyze-liberty)))
       (shapes (string-trim #(#\newline) (analyze-shapes)))
       (shape-liberties (string-trim #(#\newline) (analyze-shape-liberties)))
+      (shape-stone-liberties (string-trim #(#\newline) (analyze-shape-stone-liberties)))
       ;(scores  (string-trim #(#\newline)(analyze-score)))
       (quit (setf *quit?* t) "")
       (otherwise (concatenate 'string "? unknown command: " (string-downcase (first commands)))))))

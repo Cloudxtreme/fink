@@ -41,7 +41,7 @@
   (vector-push-extend coords (aref (shapes-points board) shape-id))
   (incf (aref (shape-sizes board) shape-id)))
 
-(defmacro size-of-shape (board shape-id)
+(defmacro shape-size (board shape-id)
   `(aref (shape-sizes ,board) ,shape-id))
 
 (defgeneric convert-shape (board shape-id to-id))
@@ -58,7 +58,7 @@
 (defmethod join-shapes ((board shape-board) nexus shapes-list)
   (let ((biggest-shape (first shapes-list)))
     (loop for shape-id in shapes-list do 
-	 (if (>  (size-of-shape board shape-id) (size-of-shape board biggest-shape))
+	 (if (>  (shape-size board shape-id) (shape-size board biggest-shape))
 	     (setf biggest-shape shape-id)))
     
     (loop for shape-id in shapes-list do

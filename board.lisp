@@ -57,9 +57,8 @@
 
 (defun get-2d-stone (board coord)
   (if (not (listp coord))
-      (progn
-	(format t "MASSIVE ERROR!~%trying to access coord:~a on board" coord))
-      (aref (aref board (first coord)) (second coord))))
+      (format t "MASSIVE ERROR!~%trying to access coord:~a on board" coord))
+  (aref (aref board (first coord)) (second coord)))
 
 (defun set-2d-stone (board coord val)
   (setf (aref (aref board (first coord)) (second coord)) val))
@@ -88,6 +87,9 @@
 
 (defmethod get-stone ((board basic-board) coords)
   (get-2d-stone (board board) coords))
+
+(defmacro get-player (board coords)
+  `(get-stone ,board ,coords))
 
 
 ;(defgeneric (setf stone) (val coords
@@ -148,7 +150,7 @@
    (rank-top-count
     :initarg rank-top-count
     :initform 0
-    :accessor rank-top-count)))
+    :accessor rank-top-count)))  
 
 (defmacro copy-slots (slots dst src)
   `(progn ,@(loop for slot in slots collect `(setf (,slot ,dst) (,slot ,src)))))
@@ -168,8 +170,10 @@
       (cons (car list) (insert (cdr list) comp var))))
 
 
-(defmethod set-stone :after ((board ranked-board) coords val)
-;  (format t "~a ~a~%" coords val)
+(defgeneric insert-into-ranked-list (board coords val))
+
+; so i can call it with "pass" as a coords and not have to "set-stone"
+(defmethod insert-into-ranked-list ((board ranked-board) coords val)
   (incf (rank-count board))
   (if (or (eql (rank-highest board) nil) (>= val (rank-highest board)))
       (progn
@@ -186,6 +190,10 @@
 	  (setf (rank-list board) `((,val ,coords)))
 	  (setf (rank-list board) (insert (rank-list board) #'(lambda (a b) (>= (first a) (first b))) `(,val ,coords))))))
 	
+(defmethod set-stone :after ((board ranked-board) coords val)
+;  (format t "~a ~a~%" coords val)
+  (insert-into-ranked-list board coords val))
+
 	
 	
 	     
@@ -234,7 +242,10 @@
     (if (not (eql (get-stone focus-board coord) nil))
 	(let ((newboard (make-instance (class-of board) :from-board board)))
 	  (set-stone newboard coord player)
-	  (set-stone score-board coord (first (genmove newboard  (invert-player player):depth (1- depth))))))))
+	  (set-stone score-board coord (first (genmove newboard  (invert-player player):depth (1- depth)))))))
+  ; test pass
+  (let ((newboard (make-instance (class-of board) :from-board board)))
+    (insert-into-ranked-list score-board "pass" (first (genmove newboard  (invert-player player):depth (1- depth))))))
   
   
 (defgeneric score (board player)
@@ -248,9 +259,10 @@
   )
 
 (defmethod select-move ((board ranked-board))
-  (if (eql (rank-top-count board) 0)
-      '(-1 (-1 -1))
-      (car (nthcdr (random (rank-top-count board)) (rank-top-list board)))))
+  ;(if (eql (rank-top-count board) 0)
+      ;'(-1 (-1 -1))
+  (pdebug "select-move ~%")
+  (car (nthcdr (random (rank-top-count board)) (rank-top-list board))))
 
 
 
@@ -261,6 +273,7 @@
   `(make-instance ,class :boardsize (boardsize ,board) :board-def-type ,def-type))
 
 (defmethod genmove ((board basic-board) player &key (depth 1))
+  (pdebug "genmove ~a~%" depth)
 ;  (format t "genmove depth ~a player ~a~%" depth player)
   (if (= depth 0)
       `( ,(score board (invert-player player)) nil)
@@ -297,39 +310,4 @@
 	      (set-stone newboard coord player)
 	      (set-stone score-board coord (first (score newboard player))))))
       (board-to-analyze (board score-board)))))
-
-
-  
-;(defun make-move (board player)
-;  (select-move (score board player)))
-
-;(defun score (board player)
-;  (let ((score-board (make-board (length board) 0)))
-;    (dolist (slist *score-functions*)
-;      (merge-score-board score-board (funcall (first slist) board player) (second slist)))
-;    score-board))
-    
-;(defun merge-score-board (score-board scores weight)
-;  (dotimes (x (length score-board))
-;    (dotimes (y (length score-board))
-;      (set-stone score-board `(,x ,y) (+ (get-stone score-board `(,x ,y)) (* weight (get-stone scores `(,x ,y))))))))
-      
-
-;(defun select-move (board)
-;  (let ((highest (get-stone board '(0 0)))
-;	(coords (make-array 10 :fill-pointer 0 :adjustable t)))
-;    (do ((x 0 (1+ x)))
-;	((>= x (length board)) (aref coords (random (length coords))))
-;      (do ((y 0 (1+ y)))
-;	  ((>= y (length board)))
-;	(let ((score (get-stone board `(,x ,y))))
-;	  (if (> score highest)
-;	      (progn
-;		(setf highest score)
-;		(setf coords (make-array 10 :fill-pointer 0 :adjustable t ))
-;		(vector-push-extend `(,x ,y) coords))
-;	      (if (= score highest)
-;		  (if (= (random 2) 1)
-;		      (vector-push-extend `(,x ,y) coords)))))))))
-      
 
