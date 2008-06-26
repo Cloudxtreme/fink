@@ -261,7 +261,7 @@
 (defmethod select-move ((board ranked-board))
   ;(if (eql (rank-top-count board) 0)
       ;'(-1 (-1 -1))
-  (pdebug "select-move ~%")
+;  (pdebug "select-move ~%")
   (car (nthcdr (random (rank-top-count board)) (rank-top-list board))))
 
 
@@ -273,7 +273,8 @@
   `(make-instance ,class :boardsize (boardsize ,board) :board-def-type ,def-type))
 
 (defmethod genmove ((board basic-board) player &key (depth 1))
-  (pdebug "genmove ~a~%" depth)
+;  (pdebug "genmove ~a~%" depth)
+
 ;  (format t "genmove depth ~a player ~a~%" depth player)
   (if (= depth 0)
       `( ,(score board (invert-player player)) nil)
