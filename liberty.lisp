@@ -46,16 +46,27 @@
 	(if (eql player #\W)
 	    (incf (white-liberties board) delta)))))
 
-(defmacro dec-liberty (board coords)
+(defmacro mod-liberty (board coords delta)
   `(progn
-     (set-2d-stone (liberty-board ,board) ,coords (1- (get-2d-stone (liberty-board ,board) ,coords)))
-    (inc-liberties ,board ,coords -1)))
+     (set-2d-stone (liberty-board ,board) ,coords (+ (get-2d-stone (liberty-board ,board) ,coords) ,delta))
+    (inc-liberties ,board ,coords ,delta)))
+
+(defmacro dec-liberty (board coords)
+  `(mod-liberty ,board ,coords -1))
+
+(defmacro inc-liberty (board coords)
+  `(mod-liberty ,board ,coords 1))
+
 
 
 (defmethod set-stone :after ((board liberty-board) coords val)
   (inc-liberties board coords (get-2d-stone (liberty-board board) coords))
   (do-over-adjacent (coords-var  board coords) 
     (dec-liberty board coords-var)))
+
+(defmethod remove-stone :after ((board liberty-board) coords)
+  (do-over-adjacent (coords-var board coords)
+    (inc-liberty board coords-var)))
      
 (defmethod score + ((board liberty-board) player)
   (if (eql player #\B)

@@ -30,6 +30,7 @@
 	   :ranked-board
 	   :get-stone
 	   :set-stone
+	   :remove-stone
 	   :get-player
 	   :coord-to-str
 	   :str-to-coord

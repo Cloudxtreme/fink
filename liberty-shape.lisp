@@ -105,6 +105,14 @@
       (if (eql (get-stone board coords-var) nil)
 	  (add-free-point board coords-var sid player)))))
   
+(defun remove-shape (board sid)
+  (pdebug "remove-shape ~a~%" sid)
+  (let ((stones (aref (shapes-points board) sid)))
+    (loop for index from 0 to (1- (length stones)) do 
+	 (progn (pdebug "removing stone ~a~%" (aref stones index))
+	 (remove-stone board (aref stones index))))))
+	 
+
 (defun remove-free-point (board coord sid player)
   (let ((free-points (aref (shapes-free-points board) sid)))
     (if (> (length free-points) 0)
@@ -125,7 +133,9 @@
 		     (inc-player-shape-liberty board player (* (length free-points) (shape-size board sid)))
 		   ;  (pdebug "set shapes-free-scores new score for ~a~%" sid)
 		     (setf (aref (shapes-free-scores board) sid)  (* (length free-points) (shape-size board sid)))
-		     (return))))))))
+		     (return))))
+	  (if (= 0 (length free-points))
+	      (remove-shape board sid))))))
 	 
 
 

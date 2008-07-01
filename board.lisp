@@ -91,6 +91,10 @@
 (defmacro get-player (board coords)
   `(get-stone ,board ,coords))
 
+(defgeneric remove-stone (board coords))
+
+(defmethod remove-stone ((board basic-board) coords)
+  (set-2d-stone (board board) coords nil))
 
 ;(defgeneric (setf stone) (val coords
 
