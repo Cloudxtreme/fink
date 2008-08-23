@@ -10,15 +10,30 @@
    :initarg b
    :accessor b)))
 
+
+(defclass class_c (class_a)
+  ((b
+    :initform (make-array 10 :initial-element 1)
+    :initarg b
+    :accessor b)))
+
+(defclass class_d (class_b class_c)
+  ((d
+    :initform 0
+    :accessor d)))
+
 (defgeneric dothing (class data)
   (:method-combination progn :most-specific-last))
   
 
 (defmethod dothing progn ((class class_a) data)
-  (loop for i from 0 to 9 do (setf (aref (a class) i) (+ (aref (a class) i) data))))
+  (loop for i from 0 to 9 do (setf (aref (a class) i) (+ (aref (a class) i) 1))));data))))
 
 (defmethod dothing progn ((class class_b) data)
-  (loop for i from 0 to 9 do (setf (aref (b class) i) (+ (aref (b class) i) (aref (a class) i) data))))
+  (loop for i from 0 to 9 do (progn (setf (aref (b class) i) (+ (aref (b class) i) 2)) (print (aref (b class) i)))));(aref (a class) i) data))))
+
+(defmethod dothing progn ((class class_c) data)
+  (loop for i from 0 to 9 do (progn (setf (aref (b class) i) (+ (aref (b class) i) 3)) (print (aref (b class) i)))))
 
 (defgeneric doother4 (class data)
   );(:method-combination progn :most-specific-last))

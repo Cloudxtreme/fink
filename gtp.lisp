@@ -48,7 +48,7 @@
 
 (defparameter *supported_commands* '("name" "version" "protocol_version" "komi" "boardsize" "clear_board" "play" "genmove" "cputime" "quit" "game_score" "list_commands" "known_command" "gogui-analyze_commands" ))
 
-(defparameter *analyze_commands* '("gfx/Liberties/liberties" "gfx/Shapes/shapes" "gfx/Shape-Liberties/shape-liberties" "gfx/Shape-Stone-Liberties/shape-stone-liberties"))
+(defparameter *analyze_commands* '("gfx/Stones/stones" "gfx/Liberties/liberties" "gfx/Shapes/shapes" "gfx/Shape-Liberties/shape-liberties" "gfx/Shape-Stone-Liberties/shape-stone-liberties"))
 
 
 
@@ -58,6 +58,7 @@
   (lambda (elem) (string-equal str elem)))
 
 (defun dispatch-gtp-command (command-string)
+  (pdebug "dispatch-gtp-command ~a~%" command-string)
   (let* ((commands (split-string (string-trim #(#\newline #\space) (string-upcase command-string)) " "))
 					;(cl-ppcre:split "[\\s\\n]+" (string-upcase command-string)))
 	 (command (intern (first commands) :gtp-handler)))
@@ -87,6 +88,7 @@
 				(loop for command in *analyze_commands* do (setf str (concatenate 'string str command (string #\newline))))
 				(string-trim #(#\newline) str)))
       (game_score (format t "Score for ~c: ~s~%" go-bot:*player* (string-trim (string #\newline) (second commands))) "")
+      (stones (string-trim #(#\newline) (analyze-stones)))
       (liberties (string-trim #(#\newline) (analyze-liberty)))
       (shapes (string-trim #(#\newline) (analyze-shapes)))
       (shape-liberties (string-trim #(#\newline) (analyze-shape-liberties)))

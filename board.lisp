@@ -57,11 +57,14 @@
 
 (defun get-2d-stone (board coord)
   (if (not (listp coord))
-      (format t "MASSIVE ERROR!~%trying to access coord:~a on board" coord))
+      (format t "MASSIVE ERROR! trying to access coord:~a on board~%" coord))
   (aref (aref board (first coord)) (second coord)))
 
 (defun set-2d-stone (board coord val)
   (setf (aref (aref board (first coord)) (second coord)) val))
+
+(defmacro coords-eql (a b)
+  `(and (eql (first ,a) (first ,b)) (eql (second ,a) (second ,b))))
 
 
 
@@ -92,8 +95,10 @@
   `(get-stone ,board ,coords))
 
 (defgeneric remove-stone (board coords))
+;  (:method-combination progn :most-specific-last))
 
 (defmethod remove-stone ((board basic-board) coords)
+  (pdebug "basic-board:remove stone ~a~%" coords)
   (set-2d-stone (board board) coords nil))
 
 ;(defgeneric (setf stone) (val coords
@@ -316,3 +321,9 @@
 	      (set-stone score-board coord (first (score newboard player))))))
       (board-to-analyze (board score-board)))))
 
+
+(defun stones-to-analyze (board)
+  (concatenate 'string (board-to-analyze (board board))
+	       '(#\newline)))
+	       
+    

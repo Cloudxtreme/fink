@@ -80,6 +80,26 @@
 	    
 ;(defun shape-to-analyze ())
 
+(defmethod remove-stone :after ((board shape-board) coords)
+  (pdebug "shape-board:remove-stone ~a~%" coords)
+  (set-2d-stone (shape-board board) coords nil))
+
+(defgeneric remove-shape (board sid))
+
+(defmethod remove-shape ((board shape-board) sid)
+  (pdebug "shape-board:remove-shape ~a~%" sid)
+  (let ((stones (aref (shapes-points board) sid)))
+    (loop for index from 0 to (1- (length stones)) do 
+	 (progn (pdebug "removing stone ~a~%" (aref stones index))
+	 (remove-stone board (aref stones index)))))
+  (pdebug "shape-sizes to 0~%")
+  (setf (aref (shape-sizes board) sid) 0)
+  (pdebug "shape-points to nil~%")
+  (setf (aref (shapes-points board) sid) (make-array  1 :fill-pointer 0 :adjustable t))
+  (pdebug "remove-shape done~%"))
+
+
+
 (defun shapes-to-analyze (board)
   (concatenate 'string (board-to-analyze (shape-board board))
 	       '(#\newline) " TEXT next-shape-id: " (write-to-string (next-shape-id board)) " length(shapes-points): " (write-to-string (length (shapes-points board)))))

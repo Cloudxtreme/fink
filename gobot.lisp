@@ -56,18 +56,19 @@
 
 (defun do-genmove (player)
 ;  (format t "do-genmove ~a~%" player)
-  (setf *player* player)
-  (if (or (eql *passed* t) (eql *last-player* player))
-      "pass"
-      (let* ((move (genmove *board* player))
-;	     (board-score (first move))
-	     (coord (second move)))
+  (let ((macro-utils:*print-debug* nil))
+    (setf *player* player)
+    (if (or (eql *passed* t) (eql *last-player* player))
+	"pass"
+	(let* ((move (genmove *board* player))
+	       ;(board-score (first move))
+	       (coord (second move)))
 	;(format t "score: ~a for player ~a ~%" board-score player)
-	(if (listp coord)  ; string= coord "pass"))
-	    (let ((coord-str (coord-to-str coord)))
-	      (do-play player coord-str)
-	      coord-str)
-	    coord))))
+	  (if (listp coord)  ; string= coord "pass"))
+	      (let ((coord-str (coord-to-str coord)))
+		(do-play player coord-str)
+		coord-str)
+	      coord)))))
 	 
 	;(if (< board-score 0)
 	;    "pass"
@@ -79,6 +80,9 @@
 (defun analyze-score ()
   (analyze-board-score *board* *player*))
 
+(defun analyze-stones ()
+  (stones-to-analyze *board*))
+
 (defun analyze-liberty ()
   (liberty-to-analyze *board*))
 
@@ -89,4 +93,4 @@
   (liberty-shape-to-analyze *board*))
 
 (defun analyze-shape-stone-liberties ()
-  (liberty-shape-stone-to-analyze *board*))
+nil);  (liberty-shape-stone-to-analyze *board*))

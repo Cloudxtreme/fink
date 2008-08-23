@@ -10,7 +10,8 @@
 	   :once-only
 	   :while
 	   :until
-	   :pdebug))
+	   :pdebug
+	   :*print-debug*))
 
 (defpackage netpipe
   (:use :common-lisp)
@@ -44,6 +45,7 @@
 	   :def-over-board
 	   :set-2d-stone
 	   :get-2d-stone
+	   :coords-eql
 	   :invert-player
 	   :prune
 	   :focus
@@ -52,7 +54,8 @@
 	   :analyze-board-score
 	   :board-to-analyze
 ;	   :do-over-2d-adjacent
-	   :do-over-adjacent))
+	   :do-over-adjacent
+	   :stones-to-analyze))
 
 (defpackage liberty-board
   (:use :common-lisp
@@ -73,7 +76,8 @@
 	   :shape-sizes
 	   :next-shape-id
 	   :convert-shape
-	   :shape-size))
+	   :shape-size
+	   :remove-shape))
 
 (defpackage liberty-shape-board
   (:use :common-lisp
@@ -82,8 +86,8 @@
 	:liberty-board
 	:shape-board)
   (:export :liberty-shape-board
-	   :liberty-shape-to-analyze
-	   :liberty-shape-stone-to-analyze))
+	   :liberty-shape-to-analyze))
+	   ;:liberty-shape-stone-to-analyze))
 
 
 (defpackage go-bot
@@ -104,6 +108,7 @@
 	    :do-play
 	    :do-genmove
 	    :composite-board
+	    :analyze-stones
 	    :analyze-score
 	    :analyze-liberty
 	    :analyze-shapes
@@ -114,7 +119,8 @@
 (defpackage gtp-handler
   (:use :common-lisp
 	:netpipe
-	:go-bot)
+	:go-bot
+	:macro-utils)
   (:export :gtp-client
 	   :gtp-net-client))
 

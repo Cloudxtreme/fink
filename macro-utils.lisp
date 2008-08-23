@@ -12,8 +12,11 @@
 ;      (format t "~a~%" i)
 ;      (incf i))))
 
+(defparameter *print-debug* t)
+
 (defmacro pdebug (&body body)
-  `(format *error-output* ,@body))
+  `(if macro-utils:*print-debug*
+       (format *error-output* ,@body)))
 
 (defmacro while (test-case &body body)
   `(do ()

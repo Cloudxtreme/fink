@@ -65,6 +65,7 @@
     (dec-liberty board coords-var)))
 
 (defmethod remove-stone :after ((board liberty-board) coords)
+  (pdebug "liberty-board:remove-stone ~a~%" coords)
   (do-over-adjacent (coords-var board coords)
     (inc-liberty board coords-var)))
      
