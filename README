@@ -1,0 +1,18 @@
+fink is a Go playing AI that I wrote to compete in the Mindstab Go AI
+competition of 2008 (http://ai.mindstab.net/wiki/index.php/Main_Page)
+It was one of my first real Lisp programming projects.
+
+It is pretty basic.  It maintains a board state model, and does a min
+max search of the gamespace with simple scoring algorithms.  Since it
+lacks pruning I think it only searchs to a depth of 1 or 2. :/
+It's scoring is implemented in subclasses of the board class that all
+add scores together.  The first module scores just for free space each 
+stone has which promotes fink to make grids.  Then further modules added
+object awareness to it and it tried to create objects with the most free
+space, which promoted it to play one monolithic structure.  And I think
+that was as far as I got before we folded the competition.
+
+Enjoy
+
+Dan Ballard <dan@mindstab.net>
+2011 
