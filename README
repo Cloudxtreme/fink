@@ -1,5 +1,5 @@
 fink is a Go playing AI that I wrote to compete in the Mindstab Go AI
-competition of 2008 (http://ai.mindstab.net/wiki/index.php/Main_Page)
+competition of 2008 (https://danballard.com/ai-contest/wiki/Main_Page)
 It was one of my first real Lisp programming projects.
 
 It is pretty basic.  It maintains a board state model, and does a min
